@@ -1,0 +1,14 @@
+@use "src/styles/mixins" as m;
+
+.mapWrapper {
+  @include m.flexbox("end", "start");
+}
+
+.buttonTap {
+  position: absolute;
+}
+
+.geoName {
+  position: absolute;
+  align-self: end;
+}

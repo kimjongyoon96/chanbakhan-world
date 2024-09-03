@@ -1,0 +1,19 @@
+@use "src/styles/mixins" as m;
+
+.buttonWrapper {
+  position: absolute;
+  @include m.flexbox(center, center, column);
+  gap: 30px;
+  padding: 10px;
+}
+
+.small {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  font-size: 12px;
+
+  z-index: 1000;
+  right: 270px;
+  opacity: 90%;
+}

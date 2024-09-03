@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
-//* 네이버지도를 서버사이드에서 클라이언트에게 보낸다.
+//* new naver 클래스에 접근할수있게 api 스크립트 return
 export const GET = async (request: NextApiRequest, res: NextApiResponse) => {
   const naverClientId = process.env.NEXT_PUBLIC_NAVER_CLIENT_ID;
 

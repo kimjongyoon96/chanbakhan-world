@@ -9,3 +9,9 @@ export const apiFe = axios.create({
   timeout: 15_000,
   withCredentials: true,
 });
+
+export const apiBe = axios.create({
+  baseURL: `${process.env.NEXT_PUBLIC_BE_URL}`,
+  timeout: 15_000,
+  withCredentials: true,
+});

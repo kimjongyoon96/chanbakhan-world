@@ -1,5 +1,5 @@
 // hooks/useNaverMap.ts
-
+"use client";
 import { useEffect, useRef } from "react";
 
 declare global {
@@ -10,14 +10,14 @@ declare global {
 
 export const useNaverMap = (
   mapId: string,
-  options: { center: [number, number]; zoom: number }
+  options: { center: number[]; zoom: number }
 ) => {
   const mapRef = useRef<any>(null);
 
   useEffect(() => {
     // 서버 사이드에서는 실행하지 않음
     if (typeof window === "undefined") return; //winodw 조회되면 서버사이드
-
+    console.log("줌,아이디변경,좌표변경시 실행");
     const initializeMap = () => {
       const { naver } = window;
       if (naver && naver.maps) {
@@ -26,6 +26,7 @@ export const useNaverMap = (
           zoom: options.zoom,
         };
         mapRef.current = new naver.maps.Map(mapId, mapOptions);
+        console.log("네이버맵훅 mapRef값:", mapRef.current);
       } else {
         console.error("네이버 지도 API가 로드되지 않았습니다.");
       }
@@ -52,6 +53,7 @@ export const useNaverMap = (
       // 컴포넌트가 언마운트될 때 맵 인스턴스 제거
       if (mapRef.current) {
         mapRef.current.destroy();
+
         mapRef.current = null;
       }
     };
