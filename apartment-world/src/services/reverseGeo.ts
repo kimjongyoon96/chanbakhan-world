@@ -1,4 +1,4 @@
-import { apiBe } from ".";
+import { apiFe } from ".";
 interface ReverseGeoResponse {
   results: {
     region: {
@@ -17,7 +17,7 @@ export const mapReverseGeo = async (
 ): Promise<undefined | string[]> => {
   try {
     const [latitude, longitude] = centering;
-    const response = await apiBe.get("/api/returnGeoMapData", {
+    const response = await apiFe.get("/api/returnGeoMapData", {
       params: {
         coords: `${longitude},${latitude}`,
       },

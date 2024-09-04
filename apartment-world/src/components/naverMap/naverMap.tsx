@@ -9,13 +9,13 @@ import { Modal } from "../modal/locationModal";
 import ButtonWrapperComponent from "../\bnaverMapButton/MapButton";
 import styles from "./index.module.scss";
 import { mapReverseGeo } from "@/services/reverseGeo";
+import { apiHospitalData } from "@/services/apiHospital";
 const NaverMap = () => {
   const [center, setCenter] = useState([37.3595704, 127.105399]); // 사용자가 현재위치 거부했을때 default 위치
-  const [zoomData, setZoomData] = useState(13); // zoom 수준에 따른 변동이 예상, 상태로 변경
+  const [zoomData, setZoomData] = useState(13); //zoom은 5km를 분기점으로 행정구역 표시로 가닥(5km이상일때는 다른 메시지 출력)
   const [clickView, setClickView] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const [reverseGeo, setReverseGeo] = useState<undefined | string[]>(undefined);
-  console.log("현재 zoom수준:", zoomData);
   const mapRef = useNaverMap("map", {
     center: center, // 초기 중심 좌표
     zoom: zoomData, // 초기 줌 레벨
@@ -54,6 +54,7 @@ const NaverMap = () => {
   const buttons = [
     { id: "button1", label: "현재위치", onClick: handleButtonClick },
     { id: "button2", label: "상급병원", onClick: handleButtonClickTwo },
+    { id: "button3", label: "대전상급병원", onClick: apiHospitalData },
 
     // 더 많은 버튼들 추가
   ];
