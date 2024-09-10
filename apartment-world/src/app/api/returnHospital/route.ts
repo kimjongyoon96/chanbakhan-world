@@ -19,10 +19,11 @@ export const GET = async (reqest: NextRequest) => {
       }
     );
     const data = response.data.response.body.items;
-    console.log("대전광역시 응급실 정보", data);
+    const newArray = Object.values(data);
+    console.log("대전광역시 응급실 정보", newArray);
 
     if (response.data !== null) {
-      return NextResponse.json({ mesage: "잘받았다이거야" }, { status: 200 });
+      return NextResponse.json(newArray, { status: 200 });
     }
   } catch (error) {
     return NextResponse.json(

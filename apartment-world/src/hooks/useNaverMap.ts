@@ -1,7 +1,6 @@
 // hooks/useNaverMap.ts
 "use client";
 import { useEffect, useRef } from "react";
-
 declare global {
   interface Window {
     naver: any;
@@ -11,13 +10,13 @@ declare global {
 export const useNaverMap = (
   mapId: string,
   options: { center: number[]; zoom: number }
-) => {
-  const mapRef = useRef<any>(null);
+): React.MutableRefObject<naver.maps.Map | null> => {
+  const mapRef = useRef<naver.maps.Map | null>(null);
 
   useEffect(() => {
     // 서버 사이드에서는 실행하지 않음
-    if (typeof window === "undefined") return; //winodw 조회되면 서버사이드
-    console.log("줌,아이디변경,좌표변경시 실행");
+    if (typeof window === "undefined") return;
+
     const initializeMap = () => {
       const { naver } = window;
       if (naver && naver.maps) {
@@ -40,7 +39,7 @@ export const useNaverMap = (
         const scriptElement = document.createElement("div");
         scriptElement.innerHTML = scriptHtml;
         document.head.appendChild(scriptElement.firstChild as Node);
-        console.log("div만들고 다 함..");
+
         // 스크립트가 로드되면 초기화
         initializeMap();
       } catch (error) {
