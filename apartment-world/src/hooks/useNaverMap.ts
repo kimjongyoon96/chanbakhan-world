@@ -1,6 +1,6 @@
 // hooks/useNaverMap.ts
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 declare global {
   interface Window {
     naver: any;
@@ -12,7 +12,6 @@ export const useNaverMap = (
   options: { center: number[]; zoom: number }
 ): React.MutableRefObject<naver.maps.Map | null> => {
   const mapRef = useRef<naver.maps.Map | null>(null);
-
   useEffect(() => {
     // 서버 사이드에서는 실행하지 않음
     if (typeof window === "undefined") return;
@@ -24,8 +23,8 @@ export const useNaverMap = (
           center: new naver.maps.LatLng(...options.center),
           zoom: options.zoom,
         };
-        mapRef.current = new naver.maps.Map(mapId, mapOptions);
-        console.log("네이버맵훅 mapRef값:", mapRef.current);
+        mapRef.current = new naver.maps.Map(mapId, mapOptions); // mapRef.current의 값
+        // console.log("네이버맵훅 mapRef값:", mapRef.current);
       } else {
         console.error("네이버 지도 API가 로드되지 않았습니다.");
       }
@@ -56,7 +55,7 @@ export const useNaverMap = (
         mapRef.current = null;
       }
     };
-  }, [mapId, options.center, options.zoom]);
+  }, [options.center, options.zoom]);
 
   return mapRef;
 };

@@ -17,15 +17,42 @@ const NaverMap = () => {
   const [clickView, setClickView] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const [reverseGeo, setReverseGeo] = useState<undefined | string[]>(undefined);
-  // const [viewportCoords, setViewportCoords] = useState<number | number[]>([
-  //   0, 0,
-  // ]);
+  const [focusedCoords, setFocusedCoords] = useState<null | number[]>([0, 0]);
+  console.log("실시간으로 변화하는 데이터", focusedCoords);
   const mapRef = useNaverMap("map", {
     center: center, // 초기 중심 좌표
     zoom: zoomData, // 초기 줌 레벨
   });
 
-  useNaverFocus(mapRef);
+  useEffect(() => {
+    if (mapRef.current) {
+      const handleCenterChange = () => {
+        const center = mapRef.current?.getCenter() as naver.maps.LatLng;
+        console.log("현재 지도 중심 좌표:", center.lat(), center.lng());
+        const add: number[] = [center.lat(), center.lng()];
+        const newLng = add.map((data) => parseFloat(data.toFixed(3)));
+        setFocusedCoords(newLng);
+      };
+
+      // 지도 이동이 끝났을 때(드래그 종료) 이벤트 리스너 등록
+      naver.maps.Event.addListener(
+        mapRef.current,
+        "dragend",
+        handleCenterChange
+      );
+      console.log("위치추적기 작동");
+      let listener = naver.maps.Event.addListener(
+        mapRef.current,
+        "dragend",
+        handleCenterChange
+      );
+      if (mapRef.current) {
+        return () => {
+          naver.maps.Event.removeListener(listener);
+        };
+      }
+    }
+  }, [mapRef.current]);
   useEffect(() => {
     const fetchLocation = async () => {
       const location = await geoLocation(); // 비동기 위치 정보 가져오기
