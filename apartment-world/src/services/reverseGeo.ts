@@ -1,22 +1,23 @@
 import { apiFe } from ".";
-interface ReverseGeoResponse {
-  results: {
-    region: {
-      area0: { name: string };
-      area1: { name: string };
-      area2: { name: string };
-      area3: { name: string };
-      area4: { name: string };
-    };
-    [key: string]: any;
-  }[];
-}
+// interface ReverseGeoResponse {
+//   results: {
+//     region: {
+//       area0: { name: string };
+//       area1: { name: string };
+//       area2: { name: string };
+//       area3: { name: string };
+//       area4: { name: string };
+//     };
+//     [key: string]: any;
+//   }[];
+// }
 
 export const mapReverseGeo = async (
   centering: number[]
 ): Promise<undefined | string[]> => {
   try {
     const [latitude, longitude] = centering;
+    console.log(latitude, latitude);
     const response = await apiFe.get("/api/returnGeoMapData", {
       params: {
         coords: `${longitude},${latitude}`,

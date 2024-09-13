@@ -14,7 +14,7 @@ export const GET = async (reqest: NextRequest) => {
           Q1: "",
           Qz: "A" && "B", //응급실 => 2차(B),3차(A)
           pageNo: 1,
-          numOfRows: 10,
+          numOfRows: 15,
         },
       }
     );

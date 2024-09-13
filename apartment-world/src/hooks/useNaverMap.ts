@@ -12,6 +12,7 @@ export const useNaverMap = (
   options: { center: number[]; zoom: number }
 ): React.MutableRefObject<naver.maps.Map | null> => {
   const mapRef = useRef<naver.maps.Map | null>(null);
+  // console.log("useNaverMap 에서의 옵션변경값", options.center);
   useEffect(() => {
     // 서버 사이드에서는 실행하지 않음
     if (typeof window === "undefined") return;

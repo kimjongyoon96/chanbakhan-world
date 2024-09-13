@@ -5,30 +5,47 @@ import { geoLocation } from "@/hooks/useGeoLocation";
 // import { useNaverMarker } from "@/hooks/useNaverMarker";
 import { useNaverMarkers } from "./naverLocation";
 import redCircle from "@/public/images/image.png";
+import hospital from "@/public/images/hospital_middle.png";
 import { Modal } from "../modal/locationModal";
 import ButtonWrapperComponent from "../\bnaverMapButton/MapButton";
 import styles from "./index.module.scss";
 import { mapReverseGeo } from "@/services/reverseGeo";
 import { apiHospitalData } from "@/services/apiHospital";
 import { useNaverFocus } from "@/hooks/useNaverFocus";
+import { useNaverMarker } from "@/hooks/useNaverMarker";
 const NaverMap = () => {
   const [center, setCenter] = useState([37.3595704, 127.105399]); // 사용자가 현재위치 거부했을때 default 위치
   const [zoomData, setZoomData] = useState(13); //zoom은 5km를 분기점으로 행정구역 표시로 가닥(5km이상일때는 다른 메시지 출력)
   const [clickView, setClickView] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const [reverseGeo, setReverseGeo] = useState<undefined | string[]>(undefined);
-  const [focusedCoords, setFocusedCoords] = useState<null | number[]>([0, 0]);
-  console.log("실시간으로 변화하는 데이터", focusedCoords);
+  const [focusedCoords, setFocusedCoords] = useState<number[]>([0, 0]); // 동적으로 변경되는 지도중앙 위도경도
+  const [hospitalData, setHospitalData] = useState<[number, number][]>([]);
+
+  console.log("병원정보", hospitalData);
   const mapRef = useNaverMap("map", {
     center: center, // 초기 중심 좌표
     zoom: zoomData, // 초기 줌 레벨
   });
 
   useEffect(() => {
+    const fetchData = async () => {
+      const data = await apiHospitalData();
+      let newArr = data?.map((sig) => {
+        return [Number(sig.wgs84Lat), Number(sig.wgs84Lon)] as [number, number];
+      });
+      setHospitalData(newArr || []);
+    };
+    fetchData();
+  }, []);
+  useNaverMarker(mapRef, hospitalData!, hospital);
+  //사용자가 드래그 했을떄, 뷰포트 기준으로 위도경도 추출
+  useEffect(() => {
+    if (!mapRef.current) return;
     if (mapRef.current) {
       const handleCenterChange = () => {
         const center = mapRef.current?.getCenter() as naver.maps.LatLng;
-        console.log("현재 지도 중심 좌표:", center.lat(), center.lng());
+        // console.log("현재 지도 중심 좌표:", center.lat(), center.lng());
         const add: number[] = [center.lat(), center.lng()];
         const newLng = add.map((data) => parseFloat(data.toFixed(3)));
         setFocusedCoords(newLng);
@@ -40,7 +57,7 @@ const NaverMap = () => {
         "dragend",
         handleCenterChange
       );
-      console.log("위치추적기 작동");
+
       let listener = naver.maps.Event.addListener(
         mapRef.current,
         "dragend",
@@ -53,6 +70,7 @@ const NaverMap = () => {
       }
     }
   }, [mapRef.current]);
+
   useEffect(() => {
     const fetchLocation = async () => {
       const location = await geoLocation(); // 비동기 위치 정보 가져오기
@@ -64,12 +82,9 @@ const NaverMap = () => {
     fetchLocation();
   }, [clickView]);
   const handleButtonClick = () => {
-    setIsModal(true);
-    if (mapRef.current) {
-      useNaverMarkers(mapRef, center, redCircle);
-      setClickView(true);
-      console.log("마커 생성 완료");
-    }
+    useNaverMarkers(mapRef, center, redCircle);
+
+    console.log("마커 생성 완료");
   };
   const handleButtonClickTwo = () => {
     console.log("두번째 버튼 눌러짐");

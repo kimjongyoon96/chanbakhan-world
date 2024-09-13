@@ -1,7 +1,7 @@
+import { json } from "stream/consumers";
 import { apiFe } from ".";
-
 export const apiHospitalData = async (): Promise<
-  { str: { [key: string]: string } }[] | undefined
+  { [key: string]: string }[] | undefined
 > => {
   try {
     const response = await apiFe.get("/api/returnHospital", {
@@ -10,11 +10,9 @@ export const apiHospitalData = async (): Promise<
       },
     });
 
-    const data = await response.data;
-    let newArr = data;
-    console.log(newArr, "api/returnHospital에 대한 응답입니다.");
-
-    return data;
+    const data = response.data;
+    console.log(data[0]);
+    return data[0];
   } catch (error) {
     console.error("error발생했습니다.");
     return undefined;
