@@ -39,7 +39,8 @@ const NaverMap = () => {
     fetchData();
   }, []);
   useNaverMarker(mapRef, hospitalData!, hospital);
-  //사용자가 드래그 했을떄, 뷰포트 기준으로 위도경도 추출
+
+  //*사용자가 드래그 했을떄, 뷰포트 기준으로 위도경도 추출
   useEffect(() => {
     if (!mapRef.current) return;
     if (mapRef.current) {
@@ -86,8 +87,17 @@ const NaverMap = () => {
 
     console.log("마커 생성 완료");
   };
-  const handleButtonClickTwo = () => {
-    console.log("두번째 버튼 눌러짐");
+  const handleButtonZoomIn = () => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setZoom(currentZoom + 1);
+    }
+  };
+  const handleButtonZoomOut = () => {
+    if (mapRef.current) {
+      const currentZoom = mapRef.current.getZoom();
+      mapRef.current.setZoom(currentZoom - 1);
+    }
   };
 
   useEffect(() => {
@@ -100,10 +110,10 @@ const NaverMap = () => {
   }, [center]);
 
   const buttons = [
-    { id: "button0", label: "+", onClick: handleButtonClick },
-    { id: "button1", label: "ㅡ", onClick: handleButtonClick },
+    { id: "button0", label: "+", onClick: handleButtonZoomIn },
+    { id: "button1", label: "ㅡ", onClick: handleButtonZoomOut },
     { id: "button2", label: "현재위치", onClick: handleButtonClick },
-    { id: "button3", label: "상급병원", onClick: handleButtonClickTwo },
+    { id: "button3", label: "상급병원", onClick: handleButtonZoomIn },
     { id: "button4", label: "대전상급병원", onClick: apiHospitalData },
 
     // 더 많은 버튼들 추가
@@ -118,7 +128,7 @@ const NaverMap = () => {
       />
       <div
         id="map"
-        style={{ width: "864px", height: "1000px", position: "relative" }}
+        style={{ width: "864px", height: "100%", position: "relative" }}
       />
       <ButtonWrapperComponent buttons={buttons} />
       <h2 className={styles.geoName}>{reverseGeo}</h2>

@@ -2,6 +2,7 @@
 
 .mapWrapper {
   @include m.flexbox("end", "start");
+  height: 100vh;
 }
 
 .buttonTap {
@@ -11,4 +12,6 @@
 .geoName {
   position: absolute;
   align-self: end;
+  right: 35%;
+  opacity: 50%;
 }
