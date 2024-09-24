@@ -6,7 +6,7 @@ declare global {
     naver: any;
   }
 }
-
+/** 병원 위도경도에 마커를 찍는 커스텀 훅 */
 export const useNaverMarker = (
   mapRef: React.MutableRefObject<naver.maps.Map | null>,
   positions: [number, number][], // 여러 위치를 배열로 받음

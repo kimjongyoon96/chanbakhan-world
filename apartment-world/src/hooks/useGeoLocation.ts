@@ -7,6 +7,7 @@ interface GeoLocationResult {
   long?: number;
   permission: boolean;
 }
+/**geoLocation을 사용해서 현재 위도경도를 retrun하는 커스텀 훅 */
 export const useGeoLocation = (): GeoLocationResult[] => {
   const [location, setLocation] = useState<GeoLocationResult[]>([
     { lati: undefined, long: undefined, permission: false },
@@ -32,7 +33,7 @@ export const useGeoLocation = (): GeoLocationResult[] => {
     };
 
     fetchLocation();
-  }, []); // 빈 배열로 두어 처음 컴포넌트가 렌더링될 때만 실행되도록 함
+  }, []);
 
   return location;
 };

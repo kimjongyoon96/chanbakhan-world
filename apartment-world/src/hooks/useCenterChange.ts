@@ -1,12 +1,11 @@
 "use client";
-/** 지도를 드래그 했을떄 변하는 좌표 추출 */
 import { useState, useEffect } from "react";
 declare global {
   interface Window {
     naver: any;
   }
 }
-
+/** 지도를 드래그 했을떄 변하는 위도경도 숫자배열을 return 하는 커스텀 훅 */
 export const useCenterChange = (
   mapRef: React.MutableRefObject<naver.maps.Map | null>
 ): number[] => {

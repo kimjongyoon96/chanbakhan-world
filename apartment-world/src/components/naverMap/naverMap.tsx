@@ -9,7 +9,7 @@ import hospital from "@/public/images/hospital_middle.png";
 import { Modal } from "../modal/locationModal";
 import ButtonWrapperComponent from "../\bnaverMapButton/MapButton";
 import styles from "./index.module.scss";
-import { mapReverseGeo } from "@/services/reverseGeo";
+// import { mapReverseGeo } from "@/services/reverseGeo";
 import { apiHospitalData } from "@/services/apiHospital";
 import { useNaverFocus } from "@/hooks/useNaverFocus";
 import { useNaverMarker } from "@/hooks/useNaverMarker";
@@ -72,14 +72,6 @@ const NaverMap = () => {
   const handleMarkerExgist = () => {
     setMarkerBoolean((prevState) => !prevState);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      let rightGeoName = await mapReverseGeo(detail);
-      let centerName = rightGeoName?.slice(1, reverseGeo!?.length - 1);
-      setReverseGeo(centerName);
-    };
-    fetchData();
-  }, [detail, center]);
 
   const buttons = [
     { id: "button0", label: "+", onClick: () => handleButtonControler("in") },
@@ -87,8 +79,6 @@ const NaverMap = () => {
     { id: "button2", label: "현재위치", onClick: handleOpenModal },
     { id: "button4", label: "대전상급병원", onClick: apiHospitalData },
     { id: "button5", label: "마커숨김", onClick: handleMarkerExgist },
-
-    // 더 많은 버튼들 추가
   ];
   return (
     <div className={styles.mapWrapper}>
