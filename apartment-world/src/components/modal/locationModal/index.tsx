@@ -18,7 +18,7 @@ export const Modal = memo(({ isOpen, children, onClose, yesClick }: Props) => {
     setMounted(true);
   });
 
-  if (!mounted && !isOpen) return null;
+  if (mounted && !isOpen) return null;
   console.log("모달실행완료");
   return (
     <div className={styles.modalWrapper}>

@@ -11,6 +11,7 @@ export const useNaverMarker = (
   mapRef: React.MutableRefObject<naver.maps.Map | null>,
   positions: [number, number][], // 여러 위치를 배열로 받음
   IconData: StaticImageData,
+  isMarker: boolean,
   iconSize: { width: number; height: number } = { width: 32, height: 32 } // 디폴트값
 ) => {
   useEffect(() => {
@@ -20,6 +21,10 @@ export const useNaverMarker = (
     }
 
     const { naver } = window;
+
+    if (!isMarker) {
+      return;
+    }
 
     const markers = positions.map((position) => {
       const markerPosition = new naver.maps.LatLng(position[0], position[1]);
@@ -40,5 +45,5 @@ export const useNaverMarker = (
     return () => {
       markers.forEach((marker) => marker.setMap(null)); // 모든 마커를 제거
     };
-  }, [mapRef, positions, IconData, iconSize]); // positions를 의존성 배열에 추가
+  }, [mapRef, positions, isMarker]); // positions를 의존성 배열에 추가
 };

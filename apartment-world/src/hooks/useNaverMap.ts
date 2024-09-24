@@ -24,6 +24,7 @@ export const useNaverMap = (
           center: new naver.maps.LatLng(...options.center),
           zoom: options.zoom,
         };
+
         mapRef.current = new naver.maps.Map(mapId, mapOptions); // mapRef.current의 값
         // console.log("네이버맵훅 mapRef값:", mapRef.current);
       } else {

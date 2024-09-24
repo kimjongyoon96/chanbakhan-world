@@ -16,8 +16,9 @@ export const mapReverseGeo = async (
   centering: number[]
 ): Promise<undefined | string[]> => {
   try {
+    console.log("TEST");
     const [latitude, longitude] = centering;
-    console.log(latitude, latitude);
+    // console.log("mapReverseGeo의 값", latitude, latitude);
     const response = await apiFe.get("/api/returnGeoMapData", {
       params: {
         coords: `${longitude},${latitude}`,

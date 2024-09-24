@@ -3,7 +3,7 @@
 .modalWrapper {
   @include m.flexbox(center, center, column);
   position: absolute;
-  z-index: var(--z-global-to-top);
+  z-index: 9999;
   width: 300px;
   height: 100%;
   background-color: rgba(var(--color-black-rgb), 0.5);

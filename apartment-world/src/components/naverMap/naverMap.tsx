@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useNaverMap } from "@/hooks/useNaverMap";
-import { geoLocation } from "@/hooks/useGeoLocation";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
 // import { useNaverMarker } from "@/hooks/useNaverMarker";
 import { useNaverMarkers } from "./naverLocation";
 import redCircle from "@/public/images/image.png";
@@ -13,21 +13,34 @@ import { mapReverseGeo } from "@/services/reverseGeo";
 import { apiHospitalData } from "@/services/apiHospital";
 import { useNaverFocus } from "@/hooks/useNaverFocus";
 import { useNaverMarker } from "@/hooks/useNaverMarker";
+import { useCenterChange } from "@/hooks/useCenterChange";
+import { useReverseGeo } from "@/hooks/useReverseGeo";
 const NaverMap = () => {
-  const [center, setCenter] = useState([37.3595704, 127.105399]); // 사용자가 현재위치 거부했을때 default 위치
   const [zoomData, setZoomData] = useState(13); //zoom은 5km를 분기점으로 행정구역 표시로 가닥(5km이상일때는 다른 메시지 출력)
-  const [clickView, setClickView] = useState(false);
   const [isModal, setIsModal] = useState(false);
+  const [isOk, setisOk] = useState<number[]>([]);
+  const [markerBoolean, setMarkerBoolean] = useState(true); // 병원 마커 조건 불리언 값
   const [reverseGeo, setReverseGeo] = useState<undefined | string[]>(undefined);
-  const [focusedCoords, setFocusedCoords] = useState<number[]>([0, 0]); // 동적으로 변경되는 지도중앙 위도경도
   const [hospitalData, setHospitalData] = useState<[number, number][]>([]);
-
-  console.log("병원정보", hospitalData);
+  const [hasAgreed, setHasAgreed] = useState(false);
+  const location = useGeoLocation(); // 훅을 통해 위치 정보를 가져옴
+  const [center, setCenter] = useState<number[]>([37.3595704, 127.105399]); // 사용자가 현재위치 거부했을때 default 위치
   const mapRef = useNaverMap("map", {
     center: center, // 초기 중심 좌표
     zoom: zoomData, // 초기 줌 레벨
   });
-
+  /** detail=> 현재 위치좌표 출력 */
+  const detail = useCenterChange(mapRef);
+  console.log("TEST", detail);
+  const handleClose = () => {
+    setIsModal(false);
+  };
+  useEffect(() => {
+    if (location[0].permission) {
+      setCenter([location[0].lati!, location[0].long!]); // !을 사용해 null 또는 undefined가 아님을 보장
+    }
+  }, [location]);
+  const { locationData, error } = useReverseGeo(detail);
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiHospitalData();
@@ -38,83 +51,42 @@ const NaverMap = () => {
     };
     fetchData();
   }, []);
-  useNaverMarker(mapRef, hospitalData!, hospital);
-
-  //*사용자가 드래그 했을떄, 뷰포트 기준으로 위도경도 추출
-  useEffect(() => {
-    if (!mapRef.current) return;
-    if (mapRef.current) {
-      const handleCenterChange = () => {
-        const center = mapRef.current?.getCenter() as naver.maps.LatLng;
-        // console.log("현재 지도 중심 좌표:", center.lat(), center.lng());
-        const add: number[] = [center.lat(), center.lng()];
-        const newLng = add.map((data) => parseFloat(data.toFixed(3)));
-        setFocusedCoords(newLng);
-      };
-
-      // 지도 이동이 끝났을 때(드래그 종료) 이벤트 리스너 등록
-      naver.maps.Event.addListener(
-        mapRef.current,
-        "dragend",
-        handleCenterChange
-      );
-
-      let listener = naver.maps.Event.addListener(
-        mapRef.current,
-        "dragend",
-        handleCenterChange
-      );
-      if (mapRef.current) {
-        return () => {
-          naver.maps.Event.removeListener(listener);
-        };
-      }
+  useNaverMarker(mapRef, hospitalData!, hospital, markerBoolean);
+  const handleOpenModal = () => {
+    if (!hasAgreed) {
+      setIsModal(true);
     }
-  }, [mapRef.current]);
-
-  useEffect(() => {
-    const fetchLocation = async () => {
-      const location = await geoLocation(); // 비동기 위치 정보 가져오기
-      if (location.permission) {
-        setCenter([location.lati!, location.long!]); // !을 사용, null |undefinded가 아님을 보장 (논리적으로 여기까지 오면 null일수없음)
-      }
-    };
-
-    fetchLocation();
-  }, [clickView]);
+  };
   const handleButtonClick = () => {
+    setIsModal(false);
     useNaverMarkers(mapRef, center, redCircle);
-
-    console.log("마커 생성 완료");
+    setHasAgreed(true);
   };
-  const handleButtonZoomIn = () => {
+  const handleButtonControler = (direction: string) => {
     if (mapRef.current) {
       const currentZoom = mapRef.current.getZoom();
-      mapRef.current.setZoom(currentZoom + 1);
+      const newZoom = direction === "in" ? currentZoom + 1 : currentZoom - 1;
+      mapRef.current.setZoom(newZoom);
     }
   };
-  const handleButtonZoomOut = () => {
-    if (mapRef.current) {
-      const currentZoom = mapRef.current.getZoom();
-      mapRef.current.setZoom(currentZoom - 1);
-    }
+  const handleMarkerExgist = () => {
+    setMarkerBoolean((prevState) => !prevState);
   };
-
   useEffect(() => {
     const fetchData = async () => {
-      let rightGeoName = await mapReverseGeo(center);
-
-      setReverseGeo(rightGeoName);
+      let rightGeoName = await mapReverseGeo(detail);
+      let centerName = rightGeoName?.slice(1, reverseGeo!?.length - 1);
+      setReverseGeo(centerName);
     };
     fetchData();
-  }, [center]);
+  }, [detail, center]);
 
   const buttons = [
-    { id: "button0", label: "+", onClick: handleButtonZoomIn },
-    { id: "button1", label: "ㅡ", onClick: handleButtonZoomOut },
-    { id: "button2", label: "현재위치", onClick: handleButtonClick },
-    { id: "button3", label: "상급병원", onClick: handleButtonZoomIn },
+    { id: "button0", label: "+", onClick: () => handleButtonControler("in") },
+    { id: "button1", label: "ㅡ", onClick: () => handleButtonControler("out") },
+    { id: "button2", label: "현재위치", onClick: handleOpenModal },
     { id: "button4", label: "대전상급병원", onClick: apiHospitalData },
+    { id: "button5", label: "마커숨김", onClick: handleMarkerExgist },
 
     // 더 많은 버튼들 추가
   ];
@@ -123,7 +95,7 @@ const NaverMap = () => {
       <Modal
         isOpen={isModal}
         children="현재위치에 동의하시겠습니까?"
-        onClose={handleButtonClick}
+        onClose={handleClose}
         yesClick={handleButtonClick}
       />
       <div
@@ -131,7 +103,7 @@ const NaverMap = () => {
         style={{ width: "864px", height: "100%", position: "relative" }}
       />
       <ButtonWrapperComponent buttons={buttons} />
-      <h2 className={styles.geoName}>{reverseGeo}</h2>
+      <h3 className={styles.geoName}>{locationData}</h3>
     </div>
   );
 };
