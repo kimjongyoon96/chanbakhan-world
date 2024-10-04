@@ -26,8 +26,11 @@ export const useNaverMarker = (
       return;
     }
 
-    const markers = positions.map((position) => {
-      const markerPosition = new naver.maps.LatLng(position[0], position[1]);
+    const markers = positions.map((positionData) => {
+      const markerPosition = new naver.maps.LatLng(
+        positionData[0],
+        positionData[1]
+      );
       const iconUrl = IconData.src;
 
       return new naver.maps.Marker({
@@ -41,7 +44,6 @@ export const useNaverMarker = (
       });
     });
 
-    // 클린업 함수: 마커를 모두 제거
     return () => {
       markers.forEach((marker) => marker.setMap(null)); // 모든 마커를 제거
     };
