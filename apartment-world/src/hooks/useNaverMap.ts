@@ -6,7 +6,7 @@ declare global {
     naver: any;
   }
 }
-
+/** 지도의 초기 설정 및 렌더링 및 useRef로 naver.maps.Map 클래스에 접근할수있게 하는 커스텀 훅 */
 export const useNaverMap = (
   mapId: string,
   options: { center: number[]; zoom: number }
